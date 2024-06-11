@@ -1,9 +1,9 @@
 %%%-------------------------------------------------------------------
-%% @doc package_delivered top level supervisor.
+%% @doc business_logic top level supervisor.
 %% @end
 %%%-------------------------------------------------------------------
 
--module(package_delivered_sup).
+-module(business_logic_sup).
 
 -behaviour(supervisor).
 

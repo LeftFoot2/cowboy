@@ -1,16 +1,16 @@
 %%%-------------------------------------------------------------------
-%% @doc package_delivered public API
+%% @doc business_logic public API
 %% @end
 %%%-------------------------------------------------------------------
 
--module(package_delivered_app).
+-module(business_logic_app).
 
 -behaviour(application).
 
 -export([start/2, stop/1]).
 
 start(_StartType, _StartArgs) ->
-    package_delivered_sup:start_link().
+    business_logic_sup:start_link().
 
 stop(_State) ->
     ok.
