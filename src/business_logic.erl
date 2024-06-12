@@ -6,7 +6,7 @@
 
 
 %% API
--export([start/0,start/3,stop/0, package_transfer_url_handler/1]).
+-export([start/0,start/3,stop/0, package_transfer_url_handler/2]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -57,14 +57,16 @@ stop() -> gen_server:call(?MODULE, stop).
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================
+package_transfer_url_handler(Package_ID,Location_ID)-> 
+    gen_server:cast(?MODULE,{transfer_package,Package_ID,Location_ID}).
 
-package_transfer_url_handler(JsonData) ->
-    %% Parse the JSON data
-    {ok, ParsedData} = jsx:decode(JsonData, [return_maps]),
-    %% Extract Package_ID and Location_ID
-    Package_ID = maps:get(<<"Package_ID">>, ParsedData),
-    Location_ID = maps:get(<<"Location_ID">>, ParsedData),
-    business_logic:handle_cast({transfer, Package_ID, Location_ID}, some_Db_PID).
+% package_transfer(JsonData) ->
+%     %% Parse the JSON data
+%     {ok, ParsedData} = jsx:decode(JsonData, [return_maps]),
+%     %% Extract Package_ID and Location_ID
+%     Package_ID = maps:get(<<"Package_ID">>, ParsedData),
+%     Location_ID = maps:get(<<"Location_ID">>, ParsedData),
+%     business_logic:handle_cast({transfer, Package_ID, Location_ID}, some_Db_PID).
 
 %%--------------------------------------------------------------------
 %% @private
@@ -118,6 +120,9 @@ handle_call({get_loc, Package_ID}, _From, Db_PID) ->
                 {reply, db_api:get_location(Location_ID,Db_PID),Db_PID}
         end;
 
+
+
+
 %% stop server
 handle_call(stop, _From, _State) ->
         {stop,normal,
@@ -138,6 +143,21 @@ handle_call(stop, _From, _State) ->
 %%TRANSFER
 % If either key is empty, it doesn't put_package
 %% package transferred
+%% 
+% handle_call({package_transfer,Package_ID,Location_ID}, _From, Riak_PID) ->
+%     	%{reply,<<bob,sue,alice>>,Riak_PID};
+% 	case riakc_pb_socket:get(Riak_PID, <<"friends">>, Name) of 
+% 	    {ok,Fetched}->
+% 		%reply with the value as a binary, not the key nor the bucket.
+		% {reply,binary_to_term(riakc_obj:get_value(Fetched)),Riak_PID};
+handle_cast(Riak_PID, {transfer_package, <<"">>, _Location_ID}) ->
+    {noreply, Riak_PID};
+handle_cast(Riak_PID, {transfer_package, _Package_ID, <<"">>}) ->
+    {noreply, Riak_PID};
+handle_cast(Riak_PID,{transfer_package, Package_ID, Location_ID}) ->
+    riakc_pb_socket:put(Riak_PID, {Package_ID, Location_ID}),
+    {noreply, Riak_PID};
+
 handle_cast({transfer, <<"">>, _Location_ID}, Db_PID) ->
     {noreply, Db_PID};
 handle_cast({transfer, _Package_ID, <<"">>}, Db_PID) ->
