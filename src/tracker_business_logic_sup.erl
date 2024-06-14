@@ -27,10 +27,18 @@ start_link() ->
 %%                  modules => modules()}   % optional
 init([]) ->
     SupFlags = #{strategy => one_for_all,
-                 intensity => 0,
-                 period => 1},
-    ChildSpecs = [],
+                 intensity => 2,
+                 period => 3600},
+    ChildSpecs = [child(business_logic,worker)],
     {ok, {SupFlags, ChildSpecs}}.
 
 %% internal functions
 %edit to run the genserver
+
+child(Module,Type)->
+        #{id => Module,
+          start => {Module,start,[]},
+          restart => permanent,
+          shutdown => 2000,
+          type => Type,
+          modules => [Module]}.
