@@ -1,9 +1,9 @@
 %%%-------------------------------------------------------------------
-%% @doc business_logic top level supervisor.
+%% @doc tracker_business_logic top level supervisor.
 %% @end
 %%%-------------------------------------------------------------------
 
--module(business_logic_sup).
+-module(tracker_business_logic_sup).
 
 -behaviour(supervisor).
 
@@ -33,3 +33,4 @@ init([]) ->
     {ok, {SupFlags, ChildSpecs}}.
 
 %% internal functions
+%edit to run the genserver

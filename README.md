@@ -1,2 +1,9 @@
-# tracker business logic
-for tracker business logic to interact with cowboy
+tracker_business_logic
+=====
+
+An OTP application
+
+Build
+-----
+
+    $ rebar3 compile
