@@ -15,6 +15,11 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
+%%% 
+%%% 
+%%% 
+
+
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -79,6 +84,12 @@ get_loc(Package_ID) ->
 %%--------------------------------------------------------------------
 -spec init(term()) -> {ok, term()}|{ok, term(), number()}|ignore |{stop, term()}.
 init([]) ->
+
+        %{Success, Riak_PID} = riakc_pb_socket:start_link("rdb.fordark.org", 8087).
+            case riakc_pb_socket:start_link("db.thomasjamiesonprograms.com", 8087) of 
+             {ok,Riak_Pid} -> {ok,Riak_Pid};
+             _ -> {stop,link_failure}
+        end,
         {ok,replace_up}.
 %%--------------------------------------------------------------------
 %% @private
@@ -157,7 +168,7 @@ handle_cast(Riak_PID, {transfer_package, <<"">>, _Location_ID}) ->
 handle_cast(Riak_PID, {transfer_package, _Package_ID, <<"">>}) ->
     {noreply, Riak_PID};
 handle_cast(Riak_PID,{transfer_package, Package_ID, Location_ID}) ->
-    riakc_pb_socket:put(Riak_PID, {Package_ID, Location_ID}),
+    riakc_pb_socket:put(Riak_PID, <<"packages">>, {Package_ID, Location_ID}),
     {noreply, Riak_PID};
 
 handle_cast({transfer, <<"">>, _Location_ID}, Db_PID) ->
