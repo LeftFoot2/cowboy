@@ -86,7 +86,7 @@ get_loc(Package_ID) ->
 init([]) ->
 
         %{Success, Riak_PID} = riakc_pb_socket:start_link("rdb.fordark.org", 8087).
-            case riakc_pb_socket:start_link("db.thomasjamiesonprograms.com", 8087) of 
+            case riakc_pb_socket:start_link('db.thomasjamiesonprograms.com', 8087) of 
              {ok,Riak_Pid} -> {ok,Riak_Pid};
              _ -> {stop,link_failure}
         end,
