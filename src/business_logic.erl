@@ -6,7 +6,7 @@
 
 
 %% API
--export([start/0,start/3,stop/0, package_transfer_url_handler/2, get_loc/1]).
+-export([start/0,start/3,stop/0, package_transfer_url_handler/1, get_loc/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -62,7 +62,7 @@ stop() -> gen_server:call(?MODULE, stop).
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================
-package_transfer_url_handler(Package_ID,Location_ID)-> 
+package_transfer_url_handler([Package_ID,Location_ID])-> 
     gen_server:cast(?MODULE,{transfer_package,Package_ID,Location_ID}).
 
 get_loc(Package_ID) ->
