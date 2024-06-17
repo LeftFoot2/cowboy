@@ -413,4 +413,8 @@ loc_req_test_() ->
             end
         ]}.
 
+riakc_connection_test_() ->
+    {ok,Pid} = riakc_pb_socket:start_link("db.thomasjamiesonprograms.com", 8087),
+    riakc_pb_socket:ping(Pid).
+
 -endif.
