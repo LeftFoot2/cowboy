@@ -415,6 +415,6 @@ loc_req_test_() ->
 
 riakc_connection_test_() ->
     {ok,Pid} = riakc_pb_socket:start_link("db.thomasjamiesonprograms.com", 8087),
-    riakc_pb_socket:ping(Pid).
+    pong = riakc_pb_socket:ping(Pid).
 
 -endif.
