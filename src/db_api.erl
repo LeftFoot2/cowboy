@@ -4,7 +4,7 @@
 
 put_package(Package_ID, Location_ID, Pid) ->
 	Request=riakc_obj:new(<<"packages">>, Package_ID, Location_ID),
-	riakc_pb_socket:put(Pid, Request).
+	{ok,_} = riakc_pb_socket:put(Pid, Request).
 
 get_package(Package_ID, Pid) ->
 	{ok, Object} = riakc_pb_socket:get(Pid, <<"packages">>, Package_ID),
