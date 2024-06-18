@@ -63,7 +63,8 @@ stop() -> gen_server:call(?MODULE, stop).
 %%% gen_server callbacks
 %%%===================================================================
 package_transfer_url_handler(Package_ID,Location_ID)-> 
-    gen_server:cast(?MODULE,{transfer_package,Package_ID,Location_ID}).
+    gen_server:cast(?MODULE,{transfer_package,Package_ID,Location_ID}),
+    gen_server:call(?MODULE,{get_location,Package_ID}).
 
 get_loc(Package_ID) ->
     gen_server:call(?MODULE,{get_location, Package_ID}).
@@ -170,13 +171,7 @@ handle_cast(Riak_PID, {transfer_package, _Package_ID, <<"">>}) ->
     {noreply, Riak_PID};
 handle_cast(Riak_PID,{transfer_package, Package_ID, Location_ID}) ->
     db_api:put_package(Package_ID, Location_ID, Riak_PID),
-    case db_api:get_package(Package_ID, Riak_PID) of
-        <<"35">> -> "smileyface";
-        _ -> "tree"
-    end;
-        
-
-    %{noreply, Riak_PID};
+    {noreply, Riak_PID};
 
 
 %% package_delivered
