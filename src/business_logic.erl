@@ -170,8 +170,13 @@ handle_cast(Riak_PID, {transfer_package, _Package_ID, <<"">>}) ->
     {noreply, Riak_PID};
 handle_cast(Riak_PID,{transfer_package, Package_ID, Location_ID}) ->
     db_api:put_package(Package_ID, Location_ID, Riak_PID),
-    <<"30">> = db_api:get_package(Package_ID, Riak_PID),
-    {noreply, Riak_PID};
+    case db_api:get_package(Package_ID, Riak_PID) of
+        <<"35">> -> "smileyface";
+        _ -> "tree"
+    end;
+        
+
+    %{noreply, Riak_PID};
 
 
 %% package_delivered
