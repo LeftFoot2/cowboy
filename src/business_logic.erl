@@ -169,16 +169,9 @@ handle_cast(Riak_PID, {transfer_package, <<"">>, _Location_ID}) ->
 handle_cast(Riak_PID, {transfer_package, _Package_ID, <<"">>}) ->
     {noreply, Riak_PID};
 handle_cast(Riak_PID,{transfer_package, Package_ID, Location_ID}) ->
-    riakc_pb_socket:put(Riak_PID, <<"packages">>, {Package_ID, Location_ID}),
+    db_api:put_package(Package_ID, Location_ID, Riak_PID),
     {noreply, Riak_PID};
 
-handle_cast({transfer, <<"">>, _Location_ID}, Db_PID) ->
-    {noreply, Db_PID};
-handle_cast({transfer, _Package_ID, <<"">>}, Db_PID) ->
-    {noreply, Db_PID};
-handle_cast({transfer, Package_ID, Location_ID}, Db_PID) ->
-    db_api:put_package(Package_ID, Location_ID, Db_PID),
-    {noreply, Db_PID};
 
 %% package_delivered
 handle_cast({deliver, <<"">>}, Db_PID) ->
