@@ -63,7 +63,8 @@ stop() -> gen_server:call(?MODULE, stop).
 %%% gen_server callbacks
 %%%===================================================================
 package_transfer_url_handler(Package_ID,Location_ID)-> 
-    gen_server:cast(?MODULE,{transfer_package,Package_ID,Location_ID}).
+    gen_server:cast(?MODULE,{transfer_package,Package_ID,Location_ID}),
+    "tree".
 
 get_loc(Package_ID) ->
     gen_server:call(?MODULE,{get_location, Package_ID}).
