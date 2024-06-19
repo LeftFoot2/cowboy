@@ -6,7 +6,7 @@
 
 
 %% API
--export([start/0,start/3,stop/0, put_package/2,get_package/1,get_location/1]).
+-export([start/0,start/3,stop/0, put_package/2,get_location/1,put_delivered/1,put_location/2,get_lat_long/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -62,14 +62,28 @@ stop() -> gen_server:call(?MODULE, stop).
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================
+
+%put a package and location in, return location id from package
 put_package(Package_ID,Location_ID)-> 
     gen_server:cast(?MODULE,{transfer_package,Package_ID,Location_ID}).
-
-get_package(Package_ID) ->
-    gen_server:call(?MODULE,{get_package, Package_ID}).
-
 get_location(Package_ID) ->
     gen_server:call(?MODULE,{get_location, Package_ID}).
+
+
+% put delivered status into riak
+put_delivered(Package_ID)-> 
+    gen_server:cast(?MODULE,{deliver,Package_ID}).
+
+
+% put a location with lat/long in riak, or return a lat/long from location ID
+put_location(Location_ID, {Latitude,Longitude}) ->
+    gen_server:cast(?MODULE,{put_location, Location_ID, {Latitude,Longitude}}).
+get_lat_long(Location_ID) ->
+    gen_server:call(?MODULE,{get_lat_long, Location_ID}).
+
+
+
+
 % package_transfer(JsonData) ->
 %     %% Parse the JSON data
 %     {ok, ParsedData} = jsx:decode(JsonData, [return_maps]),
@@ -93,8 +107,7 @@ init([]) ->
             case riakc_pb_socket:start_link("db.thomasjamiesonprograms.com", 8087) of 
              {ok,Riak_Pid} -> {ok,Riak_Pid};
              _ -> {stop,link_failure}
-        end,
-        {ok,replace_up}.
+        end.
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
@@ -110,13 +123,14 @@ init([]) ->
                                   {stop, term(), term(), integer()} | 
                                   {stop, term(), term()}.
 %% package transfer
-handle_call({get_package, Package_ID}, _From, Db_PID) ->
-    case Package_ID =:= <<"">> of
-            true ->
-                {reply,{fail,empty_key},Db_PID};
-            _ ->
-                {reply, db_api:get_package(Package_ID,Db_PID),Db_PID}
-        end;
+handle_call({get_package, PackageId}, _From, Db_PID) ->
+    case db_api:get_package(PackageId, Db_PID) of
+        {ok, Package} ->
+            {reply, {ok, Package}, Db_PID};
+        {error,notfound} ->
+            {reply, {error, notfound}, Db_PID}
+    end;
+
 
 %% package delivered (check status)
 handle_call({status, Package_ID}, _From, Db_PID) ->
@@ -184,13 +198,13 @@ handle_cast({deliver, Package_ID}, Db_PID) ->
     {noreply, Db_PID};
 
 %% location update
-handle_cast({update, <<"">>, _Latitude, _Longitude}, Db_PID) ->
+handle_cast({put_lat_long, <<"">>, _Latitude, _Longitude}, Db_PID) ->
     {noreply,failed,Db_PID};
-handle_cast({update, _Location_ID, <<"">>, _Longitude}, Db_PID) ->
+handle_cast({put_lat_long, _Location_ID, <<"">>, _Longitude}, Db_PID) ->
     {noreply,failed,Db_PID};
-handle_cast({update, _Location_ID, _Latitude, <<"">>}, Db_PID) ->
+handle_cast({put_lat_long, _Location_ID, _Latitude, <<"">>}, Db_PID) ->
     {noreply,failed,Db_PID};
-handle_cast({update, Location_ID, Latitude, Longitude}, Db_PID) ->
+handle_cast({put_lat_long, Location_ID, Latitude, Longitude}, Db_PID) ->
     db_api:put_location(Location_ID, Latitude, Longitude, Db_PID),
     {noreply, worked, Db_PID};
     
