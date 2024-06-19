@@ -123,7 +123,7 @@ init([]) ->
                                   {stop, term(), term(), integer()} | 
                                   {stop, term(), term()}.
 %% package transfer
-handle_call({get_package, PackageId}, _From, Db_PID) ->
+handle_call({get_location, PackageId}, _From, Db_PID) ->
     case db_api:get_package(PackageId, Db_PID) of
         {ok, Package} ->
             {reply, {ok, Package}, Db_PID};
@@ -142,7 +142,7 @@ handle_call({status, Package_ID}, _From, Db_PID) ->
         end;
 
 %% location_request
-handle_call({get_location, Package_ID}, _From, Db_PID) ->
+handle_call({get_lat_long, Package_ID}, _From, Db_PID) ->
     case Package_ID =:= <<"">> of
             true ->
                 {reply, fail, Db_PID};

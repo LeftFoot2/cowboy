@@ -7,8 +7,10 @@ put_package(Package_ID, Location_ID, Pid) ->
 	{ok,_} = riakc_pb_socket:put(Pid, Request).
 
 get_package(Package_ID, Pid) ->
-	{ok, Object} = riakc_pb_socket:get(Pid, <<"packages">>, Package_ID),
-	riakc_obj:get_value(Object).
+	case riakc_pb_socket:get(Pid, <<"packages">>, Package_ID) of 
+		{ok, Object} -> {ok, riakc_obj:get_value(Object)};
+		{error,notfound} -> {error,notfound}
+	end.
 
 
 %% db functions for package_deliver
