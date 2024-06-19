@@ -17,7 +17,7 @@ deliver_package(Package_ID,Pid) ->
 	riakc_pb_socket:put(Pid, Package).
 
 get_status(Package_ID, Pid) ->
-	{ok, FetchedObject} = riak:get(Pid, <<"packages">>, Package_ID),
+	{ok, FetchedObject} = riakc_pb_socket:get(Pid, <<"packages">>, Package_ID),
 	%% Extract the value from the object
 	riak_object:get_key(FetchedObject).
 
@@ -25,10 +25,10 @@ get_status(Package_ID, Pid) ->
 %% db functions for location_update
 put_location(Location_ID, Latitude, Longitude, Pid) ->
     Location = riakc_obj:new(<<"locations">>, Location_ID, {Latitude, Longitude}),
-    riak:put(Pid, Location).
+    riakc_pb_socket:put(Pid, Location).
 
 
 %% db functions for location_request
 get_location(Location_ID, Pid) ->
-	{ok, FetchedObject} = riak:get(Pid, <<"locations">>, Location_ID),
-	riak_object:get_key(FetchedObject).
+	{ok, FetchedObject} = riakc_pb_socket:get(Pid, <<"locations">>, Location_ID),
+	riak_object:get_value(FetchedObject).

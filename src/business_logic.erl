@@ -6,7 +6,7 @@
 
 
 %% API
--export([start/0,start/3,stop/0, package_transfer_url_handler/2, get_loc/1]).
+-export([start/0,start/3,stop/0, put_package/2,get_package/1,get_location/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -62,10 +62,13 @@ stop() -> gen_server:call(?MODULE, stop).
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================
-package_transfer_url_handler(Package_ID,Location_ID)-> 
+put_package(Package_ID,Location_ID)-> 
     gen_server:cast(?MODULE,{transfer_package,Package_ID,Location_ID}).
 
-get_loc(Package_ID) ->
+get_package(Package_ID) ->
+    gen_server:call(?MODULE,{get_package, Package_ID}).
+
+get_location(Package_ID) ->
     gen_server:call(?MODULE,{get_location, Package_ID}).
 % package_transfer(JsonData) ->
 %     %% Parse the JSON data
@@ -107,7 +110,7 @@ init([]) ->
                                   {stop, term(), term(), integer()} | 
                                   {stop, term(), term()}.
 %% package transfer
-handle_call({get_location, Package_ID}, _From, Db_PID) ->
+handle_call({get_package, Package_ID}, _From, Db_PID) ->
     case Package_ID =:= <<"">> of
             true ->
                 {reply,{fail,empty_key},Db_PID};
@@ -125,7 +128,7 @@ handle_call({status, Package_ID}, _From, Db_PID) ->
         end;
 
 %% location_request
-handle_call({get_loc, Package_ID}, _From, Db_PID) ->
+handle_call({get_location, Package_ID}, _From, Db_PID) ->
     case Package_ID =:= <<"">> of
             true ->
                 {reply, fail, Db_PID};
