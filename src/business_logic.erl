@@ -181,11 +181,11 @@ handle_call(stop, _From, _State) ->
 % 	    {ok,Fetched}->
 % 		%reply with the value as a binary, not the key nor the bucket.
 		% {reply,binary_to_term(riakc_obj:get_value(Fetched)),Riak_PID};
-handle_cast(Riak_PID, {transfer_package, <<"">>, _Location_ID}) ->
+handle_cast({transfer_package, <<"">>, _Location_ID}, Riak_PID) ->
     {noreply, Riak_PID};
-handle_cast(Riak_PID, {transfer_package, _Package_ID, <<"">>}) ->
+handle_cast({transfer_package, _Package_ID, <<"">>}, Riak_PID) ->
     {noreply, Riak_PID};
-handle_cast(Riak_PID,{transfer_package, Package_ID, Location_ID}) ->
+handle_cast({transfer_package, Package_ID, Location_ID}, Riak_PID) ->
     db_api:put_package(Package_ID, Location_ID, Riak_PID),
     {noreply, Riak_PID};
 
