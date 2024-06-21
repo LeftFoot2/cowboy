@@ -124,7 +124,7 @@ init([]) ->
                                   {stop, term(), term()}.
 %% package transfer
 handle_call({get_location, PackageId}, _From, Db_PID) ->
-    case db_api:get_package(PackageId, Db_PID) of
+    case db_api:get_location(PackageId, Db_PID) of
         {ok, Package} ->
             {reply, {ok, Package}, Db_PID};
         {error,notfound} ->
@@ -147,8 +147,8 @@ handle_call({get_lat_long, Package_ID}, _From, Db_PID) ->
             true ->
                 {reply, fail, Db_PID};
             _ ->
-                Location_ID = db_api:get_package(Package_ID,Db_PID),
-                {reply, db_api:get_location(Location_ID,Db_PID),Db_PID}
+                Location_ID = db_api:get_location(Package_ID,Db_PID),
+                {reply, db_api:get_lat_long(Location_ID,Db_PID),Db_PID}
         end;
 
 
@@ -267,7 +267,7 @@ transfer_test_() ->
          % This setup fun is run once before the tests are run.
          meck:new(db_api),
          meck:expect(db_api, put_package, fun(_Package_ID, _Location_ID, _Pid) -> worked end),
-         meck:expect(db_api, get_package, fun(Package_ID, _Pid) ->
+         meck:expect(db_api, get_location, fun(Package_ID, _Pid) ->
              case Package_ID of
                  <<"4">> -> <<"Detroit">>;
                  <<"5">> -> <<"Truck101">>;
@@ -386,14 +386,14 @@ loc_req_test_() ->
         fun() ->
             % This setup fun is run once before the tests are run.
             meck:new(db_api),
-            meck:expect(db_api, get_package, fun(Package_ID, _Pid) -> 
+            meck:expect(db_api, get_location, fun(Package_ID, _Pid) -> 
             case Package_ID of
                 <<"4">> -> <<"Truck101">>;
                 <<"5">> -> <<"Plane201">>;
                 _ -> fail
             end
         end),
-            meck:expect(db_api, get_location, fun(Location_ID, _Pid) ->
+            meck:expect(db_api, get_lat_long, fun(Location_ID, _Pid) ->
                 case Location_ID of
                     <<"Truck101">> -> {<<"67.2">>, <<"101.5">>};
                     <<"Plane201">> -> {<<"87.3">>, <<"130.1">>};

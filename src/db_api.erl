@@ -1,12 +1,12 @@
 -module(db_api).
--export([put_package/3, get_package/2, deliver_package/2, get_status/2, put_location/4, get_location/2]).
+-export([put_package/3, get_location/2, deliver_package/2, get_status/2, put_location/4, get_lat_long/2]).
 
 
 put_package(Package_ID, Location_ID, Pid) ->
 	Request=riakc_obj:new(<<"packages">>, Package_ID, Location_ID),
 	{ok,_} = riakc_pb_socket:put(Pid, Request).
 
-get_package(Package_ID, Pid) ->
+get_location(Package_ID, Pid) ->
 	case riakc_pb_socket:get(Pid, <<"packages">>, Package_ID) of 
 		{ok, Object} -> {ok, riakc_obj:get_value(Object)};
 		{error,notfound} -> {error,notfound}
@@ -31,6 +31,6 @@ put_location(Location_ID, Latitude, Longitude, Pid) ->
 
 
 %% db functions for location_request
-get_location(Location_ID, Pid) ->
+get_lat_long(Location_ID, Pid) ->
 	{ok, FetchedObject} = riakc_pb_socket:get(Pid, <<"locations">>, Location_ID),
 	riak_object:get_value(FetchedObject).
