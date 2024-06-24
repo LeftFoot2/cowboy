@@ -15,7 +15,7 @@ get_location(Package_ID, Pid) ->
 
 %% db functions for package_deliver and checking riak database
 deliver_package(Package_ID,Pid) ->
-	Object=riakc_obj:new(<<"deliveries">>, Package_ID),
+	Object=riakc_obj:new(<<"deliveries">>, Package_ID, <<"delivered">>),
 	riakc_pb_socket:put(Pid, Object).
 
 get_status(Package_ID, Pid) ->
