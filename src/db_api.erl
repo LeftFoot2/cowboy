@@ -1,5 +1,5 @@
 -module(db_api).
--export([put_package/3, get_location/2, deliver_package/2, get_status/2, put_location/4, get_lat_long/2]).
+-export([put_package/3, get_location/2, deliver_package/2, get_status/2, put_location/3, get_lat_long/2]).
 
 
 put_package(Package_ID, Location_ID, Pid) ->
@@ -26,10 +26,10 @@ get_status(Package_ID, Pid) ->
 
 
 %% db functions for location_update
-put_location(Location_ID, Latitude, Longitude, Pid) ->
+put_location(Location_ID, Lat_Long, Pid) ->
     %% Convert the tuple to a binary format
-    Value = io_lib:format("{~p, ~p}", [Latitude, Longitude]),
-    Object = riakc_obj:new(<<"locations">>, Location_ID, list_to_binary(Value)),
+	Json = jsx:encode(Lat_Long),
+    Object = riakc_obj:new(<<"locations">>, Location_ID, Json),
     riakc_pb_socket:put(Pid, Object).
 
 
@@ -37,8 +37,9 @@ put_location(Location_ID, Latitude, Longitude, Pid) ->
 get_lat_long(Location_ID, Pid) ->
     case riakc_pb_socket:get(Pid, <<"locations">>, Location_ID) of
         {ok, Object} ->
-            ValueBin = riakc_obj:get_value(Object),
-            {ok, parse_location(ValueBin)};
+            Json = riakc_obj:get_value(Object),
+            %% Decode the JSON back to a list
+            {ok, jsx:decode(Json)};
         {error, notfound} ->
             {error, notfound}
     end.
