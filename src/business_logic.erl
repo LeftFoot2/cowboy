@@ -85,7 +85,8 @@ get_lat_long(Location_ID) ->
 
 location_request(Package_ID) ->
     Location_ID = get_location(Package_ID),
-    Lat_Long = get_lat_long(Location_ID).
+    Lat_Long = get_lat_long(Location_ID),
+    {Lat_Long}.
 
 
 % package_transfer(JsonData) ->
