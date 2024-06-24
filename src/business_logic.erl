@@ -84,9 +84,8 @@ get_lat_long(Location_ID) ->
 
 
 location_request(Package_ID) ->
-    Location_ID = get_location(Package_ID),
-    Lat_Long = get_lat_long(Location_ID),
-    {Lat_Long}.
+    {ok,Location_ID} = get_location(Package_ID),
+    get_lat_long(Location_ID).
 
 
 % package_transfer(JsonData) ->
@@ -147,12 +146,11 @@ handle_call({status, Package_ID}, _From, Db_PID) ->
         end;
 
 %% location_request
-handle_call({get_lat_long, Package_ID}, _From, Db_PID) ->
-    case Package_ID =:= <<"">> of
+handle_call({get_lat_long, Location_ID}, _From, Db_PID) ->
+    case Location_ID =:= <<"">> of
             true ->
                 {reply, fail, Db_PID};
             _ ->
-                Location_ID = db_api:get_location(Package_ID,Db_PID),
                 {reply, db_api:get_lat_long(Location_ID,Db_PID),Db_PID}
         end;
 
