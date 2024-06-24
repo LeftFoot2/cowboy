@@ -198,13 +198,13 @@ handle_cast({deliver, Package_ID}, Db_PID) ->
     {noreply, Db_PID};
 
 %% location update
-handle_cast({put_lat_long, <<"">>, _Latitude, _Longitude}, Db_PID) ->
+handle_cast({put_location, <<"">>, _Latitude, _Longitude}, Db_PID) ->
     {noreply,failed,Db_PID};
-handle_cast({put_lat_long, _Location_ID, <<"">>, _Longitude}, Db_PID) ->
+handle_cast({put_location, _Location_ID, <<"">>, _Longitude}, Db_PID) ->
     {noreply,failed,Db_PID};
-handle_cast({put_lat_long, _Location_ID, _Latitude, <<"">>}, Db_PID) ->
+handle_cast({put_location, _Location_ID, _Latitude, <<"">>}, Db_PID) ->
     {noreply,failed,Db_PID};
-handle_cast({put_lat_long, Location_ID, Latitude, Longitude}, Db_PID) ->
+handle_cast({put_location, Location_ID, Latitude, Longitude}, Db_PID) ->
     db_api:put_location(Location_ID, Latitude, Longitude, Db_PID),
     {noreply, worked, Db_PID};
     
