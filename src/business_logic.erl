@@ -6,7 +6,7 @@
 
 
 %% API
--export([start/0,start/3,stop/0, put_package/2,get_location/1,put_delivered/1,put_location/2,get_lat_long/1]).
+-export([start/0,start/3,stop/0, put_package/2,get_location/1,put_delivered/1,put_location/2,get_lat_long/1,location_request/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -82,6 +82,10 @@ get_lat_long(Location_ID) ->
     gen_server:call(?MODULE,{get_lat_long, Location_ID}).
 
 
+
+location_request(Package_ID) ->
+    Location_ID = get_location(Package_ID),
+    Lat_Long = get_lat_long(Location_ID).
 
 
 % package_transfer(JsonData) ->

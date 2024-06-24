@@ -43,11 +43,3 @@ get_lat_long(Location_ID, Pid) ->
         {error, notfound} ->
             {error, notfound}
     end.
-
-
-parse_location(ValueBin) ->
-	ValueString = binary_to_list(ValueBin),
-	{ok, [Latitude, Longitude]} = erl_scan:string(ValueString ++ "."),
-	{value, {_, Latitude}} = erl_parse:parse_term(Latitude),
-	{value, {_, Longitude}} = erl_parse:parse_term(Longitude),
-	{Latitude, Longitude}.
