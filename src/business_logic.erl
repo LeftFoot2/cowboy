@@ -84,8 +84,10 @@ get_lat_long(Location_ID) ->
 
 
 location_request(Package_ID) ->
+    <<"pack_1">> = Package_ID,
     {ok,Location_ID} = get_location(Package_ID),
-    get_lat_long(Location_ID).
+    <<"locate_test_1">> = Location_ID,
+    {ok,[<<"1">>,<<"2">>]} = get_lat_long(Location_ID).
 
 
 % package_transfer(JsonData) ->
