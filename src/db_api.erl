@@ -26,10 +26,11 @@ get_status(Package_ID, Pid) ->
 
 
 %% db functions for location_update
-put_location(Location_ID, Lat_Long, Pid) ->
+put_location(Location_ID, {Lat, Long}, Pid) ->
     %% Convert the tuple to a binary format
-	Json = jsx:encode(Lat_Long),
-    Object = riakc_obj:new(<<"locations">>, Location_ID, Json),
+	% Json = jsx:encode(Lat_Long),
+	Map = #{<<"Latitude">> => Lat, <<"Longitude">> => Long},
+    Object = riakc_obj:new(<<"locations">>, Location_ID, Map),
     riakc_pb_socket:put(Pid, Object).
 
 
@@ -37,9 +38,9 @@ put_location(Location_ID, Lat_Long, Pid) ->
 get_lat_long(Location_ID, Pid) ->
     case riakc_pb_socket:get(Pid, <<"locations">>, Location_ID) of
         {ok, Object} ->
-            Json = riakc_obj:get_value(Object),
-            %% Decode the JSON back to a list
-            {ok, jsx:decode(Json)};
+            Map = riakc_obj:get_value(Object),
+            #{<<"Latitude">> := Lat, <<"Longitude">> := Long} = Map,
+            {ok, [Lat, Long]};
         {error, notfound} ->
             {error, notfound}
     end.
