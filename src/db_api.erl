@@ -31,6 +31,7 @@ put_location(Location_ID, {Lat, Long}, Pid) ->
 	% Json = jsx:encode(Lat_Long),
 	[1.1,1.1] = [Lat,Long],
 	Map = #{<<"lat">> => Lat, <<"long">> => Long},
+	#{<<"lat">> := 1.1, <<"long">> := 1.1} = Map,
     Object = riakc_obj:new(<<"locations">>, Location_ID, Map),
     riakc_pb_socket:put(Pid, Object).
 
