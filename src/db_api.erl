@@ -29,9 +29,7 @@ get_status(Package_ID, Pid) ->
 put_location(Location_ID, {Lat, Long}, Pid) ->
     %% Convert the tuple to a binary format
 	% Json = jsx:encode(Lat_Long),
-	[1.1,1.1] = [Lat,Long],
 	Map = #{<<"lat">> => Lat, <<"long">> => Long},
-	#{<<"lat">> := 1.1, <<"long">> := 1.1} = Map,
     Object = riakc_obj:new(<<"locations">>, Location_ID, Map),
     riakc_pb_socket:put(Pid, Object).
 
@@ -40,9 +38,9 @@ put_location(Location_ID, {Lat, Long}, Pid) ->
 get_lat_long(Location_ID, Pid) ->
     case riakc_pb_socket:get(Pid, <<"locations">>, Location_ID) of
         {ok, Object} ->
-            Map = riakc_obj:get_value(Object),
+            BinData = riakc_obj:get_value(Object),
+			Map = binary_to_term(BinData),
             #{<<"lat">> := Lat, <<"long">> := Long} = Map,
-			#{<<"lat">> := 1.1, <<"long">> := 1.1} = Map,
             {ok, [Lat, Long]};
         {error, notfound} ->
             {error, notfound}
