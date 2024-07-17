@@ -42,6 +42,7 @@ get_lat_long(Location_ID, Pid) ->
         {ok, Object} ->
             Map = riakc_obj:get_value(Object),
             #{<<"lat">> := Lat, <<"long">> := Long} = Map,
+			#{<<"lat">> := 1.1, <<"long">> := 1.1} = Map,
             {ok, [Lat, Long]};
         {error, notfound} ->
             {error, notfound}
