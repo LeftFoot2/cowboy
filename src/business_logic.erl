@@ -209,7 +209,7 @@ handle_cast({put_location, _Location_ID, {_Latitude, <<"">>}}, Db_PID) ->
     {noreply,failed,Db_PID};
 handle_cast({put_location, Location_ID, {Latitude, Longitude}}, Db_PID) ->
     db_api:put_location(Location_ID, {Latitude, Longitude}, Db_PID),
-    {noreply, worked, Db_PID};
+    {noreply,worked,Db_PID};
     
 handle_cast(_Msg, State) ->
     {noreply, State}.
