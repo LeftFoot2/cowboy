@@ -6,8 +6,9 @@
 
 
 %% API
--export([start/0,start/3,stop/0, put_package/2,get_location/1,put_delivered/1,put_location/2,get_lat_long/1,location_request/1]).
+-export([start/0,start/3,stop/0, put_package/2,get_location/1,put_location/2,get_lat_long/1,location_request/1]).
 
+-export([put_delivered/1]).
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
@@ -88,14 +89,6 @@ location_request(Package_ID) ->
     get_lat_long(Location_ID).
 
 
-% package_transfer(JsonData) ->
-%     %% Parse the JSON data
-%     {ok, ParsedData} = jsx:decode(JsonData, [return_maps]),
-%     %% Extract Package_ID and Location_ID
-%     Package_ID = maps:get(<<"Package_ID">>, ParsedData),
-%     Location_ID = maps:get(<<"Location_ID">>, ParsedData),
-%     business_logic:handle_cast({transfer, Package_ID, Location_ID}, some_Db_PID).
-
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
@@ -135,7 +128,6 @@ handle_call({get_location, PackageId}, _From, Db_PID) ->
             {reply, {error, notfound}, Db_PID}
     end;
 
-
 %% package delivered (check status)
 handle_call({status, Package_ID}, _From, Db_PID) ->
     case Package_ID =:= <<"">> of
@@ -153,9 +145,6 @@ handle_call({get_lat_long, Location_ID}, _From, Db_PID) ->
             _ ->
                 {reply, db_api:get_lat_long(Location_ID,Db_PID),Db_PID}
         end;
-
-
-
 
 %% stop server
 handle_call(stop, _From, _State) ->
@@ -178,12 +167,7 @@ handle_call(stop, _From, _State) ->
 % If either key is empty, it doesn't put_package
 %% package transferred
 %% 
-% handle_call({package_transfer,Package_ID,Location_ID}, _From, Riak_PID) ->
-%     	%{reply,<<bob,sue,alice>>,Riak_PID};
-% 	case riakc_pb_socket:get(Riak_PID, <<"friends">>, Name) of 
-% 	    {ok,Fetched}->
-% 		%reply with the value as a binary, not the key nor the bucket.
-		% {reply,binary_to_term(riakc_obj:get_value(Fetched)),Riak_PID};
+
 handle_cast({transfer_package, <<"">>, _Location_ID}, Riak_PID) ->
     {noreply, Riak_PID};
 handle_cast({transfer_package, _Package_ID, <<"">>}, Riak_PID) ->
